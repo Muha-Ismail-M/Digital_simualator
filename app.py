@@ -1,6 +1,3 @@
-# app.py - Professional Digital Twin Simulator Backend
-# Version 2.0 with Real Industry Data & Google Integration
-
 from flask import Flask, render_template, request, jsonify
 import subprocess
 import json
@@ -708,7 +705,7 @@ def generate_sample_business(name):
 
 if __name__ == '__main__':
     print("\n" + "="*60)
-    print("🏢 DIGITAL TWIN SIMULATOR - Professional Edition v2.0")
+    print("DIGITAL SIMULATOR - Professional Edition")
     print("="*60)
     print("✅ Industry benchmarks loaded")
     print("✅ Simulation engine ready")
