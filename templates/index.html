@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Twin Business Simulator | Professional Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --dark: #1e1b4b;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+        
+        .logo p {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 90px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            overflow-y: auto;
+            height: calc(100vh - 90px);
+        }
+        
+        .sidebar-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .sidebar-section h3 {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray-600);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.85em;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--gray-200);
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(99,102,241,0.3);
+        }
+        
+        .slider-value {
+            min-width: 50px;
+            padding: 4px 8px;
+            background: var(--gray-100);
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--primary);
+        }
+        
+        .btn-simulate {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-simulate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99,102,241,0.3);
+        }
+        
+        .btn-simulate:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-simulate .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Main Content */
+        .content {
+            padding: 30px;
+            overflow-y: auto;
+            height: calc(100vh - 90px);
+        }
+        
+        /* Score Card */
+        .score-card {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 30px;
+        }
+        
+        .overall-score {
+            text-align: center;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+        
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.2);
+        }
+        
+        .score-value {
+            font-size: 3em;
+            font-weight: 800;
+        }
+        
+        .score-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .score-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .score-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .score-item-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+        
+        .score-item-value {
+            font-size: 2em;
+            font-weight: 700;
+        }
+        
+        .score-item-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .score-item-bar-fill {
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+            transition: width 0.5s;
+        }
+        
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .metric-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        .metric-icon.blue { background: #dbeafe; color: #2563eb; }
+        .metric-icon.green { background: #d1fae5; color: #059669; }
+        .metric-icon.yellow { background: #fef3c7; color: #d97706; }
+        .metric-icon.red { background: #fee2e2; color: #dc2626; }
+        .metric-icon.purple { background: #ede9fe; color: #7c3aed; }
+        
+        .metric-label {
+            font-size: 0.8em;
+            color: var(--gray-600);
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .metric-change {
+            font-size: 0.85em;
+            margin-top: 8px;
+        }
+        
+        .metric-change.positive { color: var(--success); }
+        .metric-change.negative { color: var(--danger); }
+        
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        
+        .chart-subtitle {
+            font-size: 0.85em;
+            color: var(--gray-600);
+        }
+        
+        /* Recommendations */
+        .recommendations {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .recommendations h2 {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .recommendation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .recommendation-item {
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid;
+            background: var(--gray-50);
+        }
+        
+        .recommendation-item.critical {
+            border-color: var(--danger);
+            background: #fef2f2;
+        }
+        
+        .recommendation-item.high {
+            border-color: var(--warning);
+            background: #fffbeb;
+        }
+        
+        .recommendation-item.medium {
+            border-color: var(--info);
+            background: #eff6ff;
+        }
+        
+        .recommendation-item.low {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+        
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .recommendation-title {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        
+        .recommendation-priority {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .recommendation-priority.critical { background: var(--danger); color: white; }
+        .recommendation-priority.high { background: var(--warning); color: white; }
+        .recommendation-priority.medium { background: var(--info); color: white; }
+        .recommendation-priority.low { background: var(--success); color: white; }
+        
+        .recommendation-description {
+            color: var(--gray-600);
+            font-size: 0.95em;
+            margin-bottom: 12px;
+        }
+        
+        .recommendation-action {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+        
+        .recommendation-action i {
+            color: var(--primary);
+        }
+        
+        .recommendation-meta {
+            display: flex;
+            gap: 20px;
+            margin-top: 12px;
+            font-size: 0.85em;
+            color: var(--gray-600);
+        }
+        
+        /* Financial Panel */
+        .financial-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .financial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .financial-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        
+        .financial-item {
+            text-align: center;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: 12px;
+        }
+        
+        .financial-item-label {
+            font-size: 0.8em;
+            color: var(--gray-600);
+            margin-bottom: 8px;
+        }
+        
+        .financial-item-value {
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+        
+        .financial-item-value.positive { color: var(--success); }
+        .financial-item-value.negative { color: var(--danger); }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            background: var(--gray-100);
+            padding: 5px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray-600);
+        }
+        
+        .tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-animation {
+            width: 80px;
+            height: 80px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: var(--gray-700);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-600);
+        }
+        
+        .empty-state i {
+            font-size: 4em;
+            color: var(--gray-300);
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: var(--gray-700);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--gray-200);
+            }
+            
+            .content {
+                height: auto;
+            }
+            
+            .score-card {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .financial-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🏢</div>
+            <div>
+                <h1>Digital Twin Simulator</h1>
+                <p>Professional Business Operations Modeling</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="exportResults()">
+                <i class="fas fa-download"></i> Export Report
+            </button>
+            <button class="btn btn-secondary">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+        </div>
+    </header>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-animation"></div>
+        <div class="loading-text">Running Simulation...</div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar - Configuration -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-store"></i> Business Profile</h3>
+                
+                <div class="form-group">
+                    <label>Business Name</label>
+                    <input type="text" id="businessName" value="My Restaurant" placeholder="Enter business name">
+                </div>
+                
+                <div class="form-group">
+                    <label>Business Type</label>
+                    <select id="businessType" onchange="updateSubtypes()">
+                        <option value="restaurant">🍽️ Restaurant</option>
+                        <option value="retail">🛍️ Retail Store</option>
+                        <option value="warehouse">📦 Warehouse</option>
+                        <option value="healthcare">🏥 Healthcare</option>
+                        <option value="service">💼 Service Business</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Business Subtype</label>
+                    <select id="businessSubtype">
+                        <option value="fast_food">🍔 Fast Food</option>
+                        <option value="casual_dining" selected>🍝 Casual Dining</option>
+                        <option value="fine_dining">🥂 Fine Dining</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="location" value="New York, NY" placeholder="City, State">
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fas fa-users"></i> Staff Configuration</h3>
+                
+                <div class="form-group">
+                    <label>Hosts</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="numHosts" min="0" max="3" value="1">
+                        <span class="slider-value" id="numHostsValue">1</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Servers / Sales Associates</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="numServers" min="1" max="15" value="4">
+                        <span class="slider-value" id="numServersValue">4</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Kitchen Staff / Back Office</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="numCooks" min="1" max="10" value="3">
+                        <span class="slider-value" id="numCooksValue">3</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Cashiers</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="numCashiers" min="1" max="8" value="2">
+                        <span class="slider-value" id="numCashiersValue">2</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Staff Experience Level</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="staffExperience" min="1" max="5" value="3">
+                        <span class="slider-value" id="staffExperienceValue">3</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fas fa-chart-line"></i> Operations</h3>
+                
+                <div class="form-group">
+                    <label>Base Customer Arrival Rate (per hour)</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="arrivalRate" min="10" max="150" value="30">
+                        <span class="slider-value" id="arrivalRateValue">30</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Peak Hour Multiplier</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="peakMultiplier" min="1" max="3" step="0.1" value="2">
+                        <span class="slider-value" id="peakMultiplierValue">2.0x</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Operating Hours per Day</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="operatingHours" min="6" max="24" value="12">
+                        <span class="slider-value" id="operatingHoursValue">12h</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Simulation Duration (Days)</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="simDays" min="1" max="30" value="7">
+                        <span class="slider-value" id="simDaysValue">7</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fas fa-dollar-sign"></i> Financial</h3>
+                
+                <div class="form-group">
+                    <label>Average Ticket ($)</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="avgTicket" min="10" max="200" value="35">
+                        <span class="slider-value" id="avgTicketValue">$35</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Hourly Wage ($)</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="hourlyWage" min="10" max="40" value="15">
+                        <span class="slider-value" id="hourlyWageValue">$15</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fas fa-cloud-sun"></i> External Factors</h3>
+                
+                <div class="form-group">
+                    <label>Day of Week</label>
+                    <select id="dayOfWeek">
+                        <option value="monday">Monday</option>
+                        <option value="tuesday">Tuesday</option>
+                        <option value="wednesday">Wednesday</option>
+                        <option value="thursday">Thursday</option>
+                        <option value="friday" selected>Friday</option>
+                        <option value="saturday">Saturday</option>
+                        <option value="sunday">Sunday</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Weather Conditions</label>
+                    <select id="weather">
+                        <option value="clear" selected>☀️ Clear</option>
+                        <option value="cloudy">☁️ Cloudy</option>
+                        <option value="rainy">🌧️ Rainy</option>
+                        <option value="snowy">❄️ Snowy</option>
+                        <option value="hot">🥵 Hot</option>
+                        <option value="cold">🥶 Cold</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Special Events</label>
+                    <select id="specialEvent">
+                        <option value="none" selected>None</option>
+                        <option value="holiday">🎄 Holiday</option>
+                        <option value="local_event">🎪 Local Event</option>
+                        <option value="sports_game">⚽ Sports Game</option>
+                        <option value="convention">📋 Convention</option>
+                        <option value="competitor_promo">🏷️ Competitor Promotion</option>
+                    </select>
+                </div>
+                
+                <button class="btn-simulate" id="btnSimulate" onclick="runSimulation()">
+                    <i class="fas fa-play"></i> Run Simulation
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content" id="mainContent">
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Configure & Run Your Simulation</h3>
+                <p>Adjust the parameters on the left and click "Run Simulation"<br>to see detailed analytics and recommendations.</p>
+            </div>
+
+            <!-- Results (hidden initially) -->
+            <div id="resultsContainer" style="display: none;">
+                <!-- Score Card -->
+                <div class="score-card" id="scoreCard">
+                    <div class="overall-score">
+                        <div class="score-circle">
+                            <span class="score-value" id="overallScore">--</span>
+                        </div>
+                        <div class="score-label">Overall Performance Score</div>
+                    </div>
+                    <div class="score-details">
+                        <div class="score-item">
+                            <div class="score-item-label">Wait Time Score</div>
+                            <div class="score-item-value" id="waitScore">--</div>
+                            <div class="score-item-bar">
+                                <div class="score-item-bar-fill" id="waitScoreBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-item-label">Throughput Score</div>
+                            <div class="score-item-value" id="throughputScore">--</div>
+                            <div class="score-item-bar">
+                                <div class="score-item-bar-fill" id="throughputScoreBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-item-label">Efficiency Score</div>
+                            <div class="score-item-value" id="efficiencyScore">--</div>
+                            <div class="score-item-bar">
+                                <div class="score-item-bar-fill" id="efficiencyScoreBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="metrics-grid" id="metricsGrid">
+                    <div class="metric-card">
+                        <div class="metric-icon blue"><i class="fas fa-users"></i></div>
+                        <div class="metric-label">Total Customers</div>
+                        <div class="metric-value" id="metricTotalCustomers">--</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon green"><i class="fas fa-check-circle"></i></div>
+                        <div class="metric-label">Served</div>
+                        <div class="metric-value" id="metricServed">--</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon red"><i class="fas fa-times-circle"></i></div>
+                        <div class="metric-label">Abandoned</div>
+                        <div class="metric-value" id="metricAbandoned">--</div>
+                        <div class="metric-change negative" id="metricAbandonRate">-- %</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon yellow"><i class="fas fa-clock"></i></div>
+                        <div class="metric-label">Avg Wait Time</div>
+                        <div class="metric-value" id="metricWait">--</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon purple"><i class="fas fa-tachometer-alt"></i></div>
+                        <div class="metric-label">Staff Utilization</div>
+                        <div class="metric-value" id="metricUtilization">--%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon green"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="metric-label">Total Revenue</div>
+                        <div class="metric-value" id="metricRevenue">$--</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <div class="chart-title">Hourly Arrivals & Served</div>
+                                <div class="chart-subtitle">Average across simulation period</div>
+                            </div>
+                        </div>
+                        <canvas id="hourlyChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <div class="chart-title">Station Utilization</div>
+                                <div class="chart-subtitle">Capacity usage by station</div>
+                            </div>
+                        </div>
+                        <canvas id="utilizationChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="recommendations">
+                    <h2><i class="fas fa-lightbulb"></i> AI Recommendations</h2>
+                    <div class="recommendation-list" id="recommendationList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Financial Panel -->
+                <div class="financial-panel">
+                    <div class="financial-header">
+                        <h2><i class="fas fa-chart-pie"></i> Financial Projections</h2>
+                    </div>
+                    <div class="financial-grid">
+                        <div class="financial-item">
+                            <div class="financial-item-label">Monthly Revenue</div>
+                            <div class="financial-item-value positive" id="finRevenue">$--</div>
+                        </div>
+                        <div class="financial-item">
+                            <div class="financial-item-label">Monthly Costs</div>
+                            <div class="financial-item-value" id="finCosts">$--</div>
+                        </div>
+                        <div class="financial-item">
+                            <div class="financial-item-label">Monthly Profit</div>
+                            <div class="financial-item-value positive" id="finProfit">$--</div>
+                        </div>
+                        <div class="financial-item">
+                            <div class="financial-item-label">Profit Margin</div>
+                            <div class="financial-item-value" id="finMargin">--%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize slider value displays
+        document.querySelectorAll('.slider').forEach(slider => {
+            const valueSpan = document.getElementById(slider.id + 'Value');
+            if (valueSpan) {
+                const updateValue = () => {
+                    let val = slider.value;
+                    if (slider.id === 'peakMultiplier') val = val + 'x';
+                    else if (slider.id === 'operatingHours') val = val + 'h';
+                    else if (slider.id === 'avgTicket' || slider.id === 'hourlyWage') val = '$' + val;
+                    valueSpan.textContent = val;
+                };
+                slider.addEventListener('input', updateValue);
+                updateValue();
+            }
+        });
+
+        // Business type subtypes
+        const subtypes = {
+            restaurant: [
+                {value: 'fast_food', label: '🍔 Fast Food'},
+                {value: 'casual_dining', label: '🍝 Casual Dining'},
+                {value: 'fine_dining', label: '🥂 Fine Dining'}
+            ],
+            retail: [
+                {value: 'convenience_store', label: '🏪 Convenience Store'},
+                {value: 'clothing_store', label: '👔 Clothing Store'},
+                {value: 'grocery_store', label: '🛒 Grocery Store'},
+                {value: 'electronics', label: '💻 Electronics'}
+            ],
+            warehouse: [
+                {value: 'small', label: '📦 Small Warehouse'},
+                {value: 'medium', label: '🏭 Medium Warehouse'},
+                {value: 'large', label: '🏢 Large Warehouse'}
+            ],
+            healthcare: [
+                {value: 'urgent_care', label: '🏥 Urgent Care'},
+                {value: 'dental_office', label: '🦷 Dental Office'},
+                {value: 'pharmacy', label: '💊 Pharmacy'}
+            ],
+            service: [
+                {value: 'bank_branch', label: '🏦 Bank Branch'},
+                {value: 'hair_salon', label: '💇 Hair Salon'},
+                {value: 'auto_service', label: '🚗 Auto Service'}
+            ]
+        };
+
+        function updateSubtypes() {
+            const type = document.getElementById('businessType').value;
+            const subtypeSelect = document.getElementById('businessSubtype');
+            subtypeSelect.innerHTML = '';
+            
+            subtypes[type].forEach(st => {
+                const option = document.createElement('option');
+                option.value = st.value;
+                option.textContent = st.label;
+                subtypeSelect.appendChild(option);
+            });
+        }
+
+        // Charts
+        let hourlyChart = null;
+        let utilizationChart = null;
+
+        function initCharts() {
+            // Hourly Chart
+            const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+            hourlyChart = new Chart(hourlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Arrivals',
+                            data: [],
+                            backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                            borderRadius: 5
+                        },
+                        {
+                            label: 'Served',
+                            data: [],
+                            backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                            borderRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Utilization Chart
+            const utilCtx = document.getElementById('utilizationChart').getContext('2d');
+            utilizationChart = new Chart(utilCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#6366f1', '#8b5cf6', '#a855f7',
+                            '#d946ef', '#ec4899', '#f43f5e'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Run simulation
+        async function runSimulation() {
+            const btn = document.getElementById('btnSimulate');
+            const loading = document.getElementById('loadingOverlay');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Simulating...';
+            loading.classList.add('active');
+
+            const config = {
+                business_name: document.getElementById('businessName').value,
+                business_type: document.getElementById('businessType').value,
+                business_subtype: document.getElementById('businessSubtype').value,
+                location: document.getElementById('location').value,
+                num_hosts: parseInt(document.getElementById('numHosts').value),
+                num_servers: parseInt(document.getElementById('numServers').value),
+                num_cooks: parseInt(document.getElementById('numCooks').value),
+                num_cashiers: parseInt(document.getElementById('numCashiers').value),
+                staff_experience: parseInt(document.getElementById('staffExperience').value),
+                base_arrival_rate: parseInt(document.getElementById('arrivalRate').value),
+                peak_multiplier: parseFloat(document.getElementById('peakMultiplier').value),
+                operating_hours: parseInt(document.getElementById('operatingHours').value),
+                simulation_days: parseInt(document.getElementById('simDays').value),
+                avg_ticket: parseFloat(document.getElementById('avgTicket').value),
+                hourly_wage: parseFloat(document.getElementById('hourlyWage').value),
+                day_of_week: document.getElementById('dayOfWeek').value,
+                weather: document.getElementById('weather').value,
+                special_event: document.getElementById('specialEvent').value
+            };
+
+            try {
+                const response = await fetch('/api/simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    alert('Simulation error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-play"></i> Run Simulation';
+                loading.classList.remove('active');
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+
+            const results = data.results;
+            const recommendations = data.recommendations;
+            const financials = data.financials;
+
+            // Scores
+            document.getElementById('overallScore').textContent = results.scores.overall;
+            document.getElementById('waitScore').textContent = results.scores.wait_time;
+            document.getElementById('waitScoreBar').style.width = results.scores.wait_time + '%';
+            document.getElementById('throughputScore').textContent = results.scores.throughput;
+            document.getElementById('throughputScoreBar').style.width = results.scores.throughput + '%';
+            document.getElementById('efficiencyScore').textContent = results.scores.efficiency;
+            document.getElementById('efficiencyScoreBar').style.width = results.scores.efficiency + '%';
+
+            // Metrics
+            document.getElementById('metricTotalCustomers').textContent = results.summary.total_customers.toLocaleString();
+            document.getElementById('metricServed').textContent = results.summary.served_customers.toLocaleString();
+            document.getElementById('metricAbandoned').textContent = results.summary.abandoned_customers.toLocaleString();
+            document.getElementById('metricAbandonRate').textContent = results.summary.abandonment_rate + '% rate';
+            document.getElementById('metricWait').textContent = results.wait_times.average.toFixed(1) + ' min';
+            document.getElementById('metricUtilization').textContent = results.utilization.overall.toFixed(0) + '%';
+            document.getElementById('metricRevenue').textContent = '$' + results.financial.total_revenue.toLocaleString();
+
+            // Charts
+            if (!hourlyChart) initCharts();
+
+            // Update hourly chart
+            const hourlyData = results.hourly_data || [];
+            hourlyChart.data.labels = hourlyData.map(h => h.hour + ':00');
+            hourlyChart.data.datasets[0].data = hourlyData.map(h => h.avg_arrivals);
+            hourlyChart.data.datasets[1].data = hourlyData.map(h => h.avg_served);
+            hourlyChart.update();
+
+            // Update utilization chart
+            const stations = results.utilization.stations || [];
+            utilizationChart.data.labels = stations.map(s => s.name);
+            utilizationChart.data.datasets[0].data = stations.map(s => s.utilization);
+            utilizationChart.update();
+
+            // Recommendations
+            const recList = document.getElementById('recommendationList');
+            recList.innerHTML = recommendations.map(rec => `
+                <div class="recommendation-item ${rec.priority}">
+                    <div class="recommendation-header">
+                        <span class="recommendation-title">${rec.title}</span>
+                        <span class="recommendation-priority ${rec.priority}">${rec.priority}</span>
+                    </div>
+                    <div class="recommendation-description">${rec.description}</div>
+                    <div class="recommendation-action">
+                        <i class="fas fa-arrow-right"></i>
+                        <span>${rec.action}</span>
+                    </div>
+                    <div class="recommendation-meta">
+                        <span><i class="fas fa-chart-line"></i> Impact: ${rec.impact}</span>
+                        <span><i class="fas fa-dollar-sign"></i> Cost: ${rec.cost}</span>
+                        <span><i class="fas fa-clock"></i> Timeline: ${rec.timeline}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Financials
+            document.getElementById('finRevenue').textContent = '$' + financials.revenue.monthly.toLocaleString();
+            document.getElementById('finCosts').textContent = '$' + financials.costs.total_monthly.toLocaleString();
+            document.getElementById('finProfit').textContent = '$' + financials.profit.monthly.toLocaleString();
+            document.getElementById('finMargin').textContent = financials.profit.margin.toFixed(1) + '%';
+
+            // Color the profit
+            const profitEl = document.getElementById('finProfit');
+            profitEl.className = 'financial-item-value ' + (financials.profit.monthly >= 0 ? 'positive' : 'negative');
+        }
+
+        function exportResults() {
+            alert('Export feature coming soon! Results will be downloadable as PDF/Excel.');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSubtypes();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+{
+    "restaurant": {
+        "fast_food": {
+            "avg_service_time": 3.5,
+            "avg_ticket": 12.50,
+            "peak_hours": [12, 13, 18, 19],
+            "customers_per_hour": {
+                "slow": 30,
+                "normal": 60,
+                "busy": 120,
+                "rush": 180
+            },
+            "staff_ratios": {
+                "cashiers_per_100_customers": 2,
+                "cooks_per_100_customers": 3
+            },
+            "benchmarks": {
+                "target_wait_time": 3,
+                "max_acceptable_wait": 7,
+                "target_utilization": 75,
+                "labor_cost_percent": 28
+            }
+        },
+        "casual_dining": {
+            "avg_service_time": 45,
+            "avg_ticket": 35.00,
+            "peak_hours": [12, 13, 18, 19, 20],
+            "customers_per_hour": {
+                "slow": 15,
+                "normal": 30,
+                "busy": 50,
+                "rush": 70
+            },
+            "staff_ratios": {
+                "servers_per_table": 0.25,
+                "cooks_per_50_seats": 2,
+                "hosts_per_restaurant": 1
+            },
+            "benchmarks": {
+                "target_wait_time": 10,
+                "max_acceptable_wait": 20,
+                "target_utilization": 70,
+                "labor_cost_percent": 32,
+                "table_turnover": 2.5
+            }
+        },
+        "fine_dining": {
+            "avg_service_time": 90,
+            "avg_ticket": 125.00,
+            "peak_hours": [19, 20, 21],
+            "customers_per_hour": {
+                "slow": 8,
+                "normal": 15,
+                "busy": 25,
+                "rush": 35
+            },
+            "benchmarks": {
+                "target_wait_time": 5,
+                "max_acceptable_wait": 15,
+                "target_utilization": 65,
+                "labor_cost_percent": 35
+            }
+        }
+    },
+    "retail": {
+        "convenience_store": {
+            "avg_transaction_time": 2,
+            "avg_ticket": 15.00,
+            "customers_per_hour": {"slow": 40, "normal": 80, "busy": 150},
+            "benchmarks": {"target_wait_time": 2, "conversion_rate": 0.85}
+        },
+        "clothing_store": {
+            "avg_transaction_time": 5,
+            "avg_ticket": 75.00,
+            "browse_time": 20,
+            "fitting_room_time": 12,
+            "customers_per_hour": {"slow": 20, "normal": 45, "busy": 80},
+            "benchmarks": {"target_wait_time": 4, "conversion_rate": 0.25}
+        },
+        "grocery_store": {
+            "avg_transaction_time": 4,
+            "avg_ticket": 45.00,
+            "customers_per_hour": {"slow": 50, "normal": 120, "busy": 250},
+            "benchmarks": {"target_wait_time": 5, "conversion_rate": 0.90}
+        },
+        "electronics": {
+            "avg_transaction_time": 8,
+            "avg_ticket": 250.00,
+            "customers_per_hour": {"slow": 10, "normal": 25, "busy": 50},
+            "benchmarks": {"target_wait_time": 5, "conversion_rate": 0.15}
+        }
+    },
+    "warehouse": {
+        "small": {
+            "orders_per_hour": {"slow": 20, "normal": 50, "busy": 100},
+            "pick_time_per_item": 0.5,
+            "pack_time_per_order": 3,
+            "items_per_order": 3,
+            "benchmarks": {"target_fulfillment_time": 30, "accuracy_rate": 0.995}
+        },
+        "medium": {
+            "orders_per_hour": {"slow": 80, "normal": 200, "busy": 400},
+            "pick_time_per_item": 0.4,
+            "pack_time_per_order": 2.5,
+            "items_per_order": 4,
+            "benchmarks": {"target_fulfillment_time": 25, "accuracy_rate": 0.998}
+        },
+        "large": {
+            "orders_per_hour": {"slow": 300, "normal": 800, "busy": 1500},
+            "pick_time_per_item": 0.3,
+            "pack_time_per_order": 2,
+            "items_per_order": 5,
+            "benchmarks": {"target_fulfillment_time": 20, "accuracy_rate": 0.999}
+        }
+    },
+    "healthcare": {
+        "urgent_care": {
+            "avg_visit_time": 35,
+            "patients_per_hour": {"slow": 5, "normal": 12, "busy": 20},
+            "benchmarks": {"target_wait_time": 15, "max_acceptable_wait": 45}
+        },
+        "dental_office": {
+            "avg_visit_time": 45,
+            "patients_per_hour": {"slow": 3, "normal": 6, "busy": 10},
+            "benchmarks": {"target_wait_time": 10, "max_acceptable_wait": 20}
+        },
+        "pharmacy": {
+            "avg_service_time": 8,
+            "customers_per_hour": {"slow": 15, "normal": 35, "busy": 60},
+            "benchmarks": {"target_wait_time": 10, "max_acceptable_wait": 20}
+        }
+    },
+    "service": {
+        "bank_branch": {
+            "avg_transaction_time": 6,
+            "customers_per_hour": {"slow": 15, "normal": 30, "busy": 50},
+            "benchmarks": {"target_wait_time": 5, "max_acceptable_wait": 15}
+        },
+        "hair_salon": {
+            "avg_service_time": 40,
+            "customers_per_hour": {"slow": 4, "normal": 8, "busy": 12},
+            "benchmarks": {"target_wait_time": 10, "max_acceptable_wait": 20}
+        },
+        "auto_service": {
+            "avg_service_time": 60,
+            "customers_per_hour": {"slow": 3, "normal": 6, "busy": 10},
+            "benchmarks": {"target_wait_time": 15, "max_acceptable_wait": 30}
+        }
+    },
+    "hourly_patterns": {
+        "restaurant": {
+            "6": 0.2, "7": 0.4, "8": 0.5, "9": 0.3, "10": 0.4,
+            "11": 0.7, "12": 1.0, "13": 0.9, "14": 0.5, "15": 0.3,
+            "16": 0.4, "17": 0.6, "18": 1.0, "19": 1.0, "20": 0.8,
+            "21": 0.5, "22": 0.3
+        },
+        "retail": {
+            "9": 0.3, "10": 0.5, "11": 0.7, "12": 0.9, "13": 0.8,
+            "14": 0.7, "15": 0.8, "16": 0.9, "17": 1.0, "18": 0.9,
+            "19": 0.7, "20": 0.5, "21": 0.3
+        },
+        "warehouse": {
+            "6": 0.8, "7": 1.0, "8": 1.0, "9": 0.9, "10": 0.8,
+            "11": 0.7, "12": 0.5, "13": 0.6, "14": 0.8, "15": 0.9,
+            "16": 0.7, "17": 0.5
+        }
+    },
+    "day_of_week_factors": {
+        "restaurant": {
+            "monday": 0.7, "tuesday": 0.75, "wednesday": 0.8,
+            "thursday": 0.85, "friday": 1.0, "saturday": 1.0, "sunday": 0.9
+        },
+        "retail": {
+            "monday": 0.6, "tuesday": 0.65, "wednesday": 0.7,
+            "thursday": 0.75, "friday": 0.9, "saturday": 1.0, "sunday": 0.85
+        }
+    },
+    "labor_costs": {
+        "cashier": {"min": 12, "avg": 15, "max": 20},
+        "server": {"min": 8, "avg": 12, "max": 18},
+        "cook": {"min": 14, "avg": 18, "max": 25},
+        "manager": {"min": 18, "avg": 25, "max": 40},
+        "warehouse_worker": {"min": 15, "avg": 18, "max": 24},
+        "retail_associate": {"min": 12, "avg": 15, "max": 20}
+    }
+}
