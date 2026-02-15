@@ -254,11 +254,3 @@ export GOOGLE_API_KEY="YOUR_KEY"
 setx GOOGLE_API_KEY "YOUR_KEY"
 Restart the Flask app after setting the variable.
 
-Known gaps / cleanup suggestions
-templates/index.html is minimal; a production version would typically include:
-JavaScript to call /api/simulate
-chart/table rendering for results (wait times, utilization, financials)
-.vscode/tasks.json references digital_twin_simulator.cpp, but this repo contains digital_simulator.cpp
-build/ and *.exe artifacts are usually ignored via .gitignore in production repos
-License
-No license file is currently included. If you plan to share or accept contributions, add a LICENSE (MIT/Apache-2.0/GPL/etc.) and update this section.
