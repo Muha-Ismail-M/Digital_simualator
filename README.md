@@ -1,273 +1,113 @@
-Digital Simulator (Business Operations Modeling)
-A lightweight Flask app that simulates day-to-day business operations (customer arrivals, service capacity, wait times, abandonment) and turns the results into KPIs, actionable recommendations, and financial projections.
+# Digital Simulator (Digital_simualator)
 
-This is a “what-if” tool: tweak staffing, hours, demand, weather, and special events to quickly see how the system behaves under different scenarios.
+Digital Simulator is a lightweight web app for **business operations modeling**. It lets you configure a real-world style service business (restaurant, retail, warehouse, healthcare, or general service), then runs a **discrete-event simulation** to estimate throughput, wait times, utilization, revenue, and operational bottlenecks—followed by prioritized recommendations and simple financial projections.
 
-Highlights
-Multi-day simulation with hour-by-hour demand shaping
-Demand multipliers:
-Hourly traffic patterns
-Day-of-week factors
-Weather effects
-Special-event effects
-Staff experience efficiency
-Outputs:
-Served vs abandoned customers + abandonment rate
-Throughput per hour
-Wait-time distribution (avg/median/min/max/p95) + benchmark targets
-Utilization + bottleneck identification (station-level “heatmap”)
-Peak-hour detection
-Rules-based recommendations (prioritized)
-Monthly/annual financial projections + break-even and simple ROI scenario
-Tech stack
-Python 3
-Flask
-requests (optional: Google Places lookup)
-Data model: data/industry_data.json
-Repository layout
-text
+This project is intended for learning, experimentation, and “what-if” analysis (e.g., *What happens if I add one cashier? Extend hours? Increase demand?*).
 
-.
-├── app.py
-├── data/
-│   └── industry_data.json
-├── templates/
-│   └── index.html
-├── digital_simulator.cpp
-├── simulator.exe
-└── nano
-Notes:
+---
 
-app.py contains the working Flask server, simulation engine, recommendation logic, and financial model.
-industry_data.json is currently stored as a minified JSON file (single line) with benchmarks + patterns.
-templates/index.html is a UI shell (mostly static text/structure).
-digital_simulator.cpp and simulator.exe appear to be an experimental/alternate implementation.
-nano is a process list dump (safe to remove if unneeded).
-Quick start
-1) Create a virtual environment (recommended)
-text
+## What it does
 
-python -m venv .venv
-# Windows:
-.venv\Scripts\activate
-# macOS/Linux:
-source .venv/bin/activate
-2) Install dependencies
-text
+### Operations simulation
+You configure your business and operating conditions (staffing, service speed, customer demand, hours, etc.). The simulator generates customers over time and models the flow through capacity constraints to estimate:
 
-pip install flask requests
-3) Run the server
-text
+- Customers served vs. customers abandoned (lost due to waiting/capacity)
+- Wait-time statistics (average, median, max, p95)
+- Throughput per hour
+- Estimated utilization and bottlenecks (where the system is overloaded)
 
-python app.py
-Open:
+### Recommendations (decision support)
+Based on simulation results, the app generates actionable recommendations such as:
 
-text
+- Where the **critical bottleneck** is (and whether it’s near/over capacity)
+- Whether wait times and abandonment are above target
+- Whether staffing looks over/under-utilized
+- Peak-hour scheduling tips
 
-http://127.0.0.1:5000
-Supported business types (as implemented)
-The simulator is driven by data/industry_data.json. Current supported categories include:
+> Note: The UI labels this as “AI Recommendations,” but the current logic is a rules/heuristics-based recommendation engine driven by the simulation outputs.
 
-restaurant: fast_food, casual_dining, fine_dining
-retail: convenience_store, clothing_store, grocery_store, electronics
-warehouse: small, medium, large
-healthcare: urgent_care, dental_office, pharmacy
-service: bank_branch, hair_salon, auto_service
-The data file also includes:
+### Financial projections
+Using simulated demand and a basic cost model, the app estimates:
 
-hourly_patterns (currently defined for restaurant/retail/warehouse)
-day_of_week_factors (currently defined for restaurant/retail)
-labor_costs reference ranges
-How it works (model overview)
-This is a pragmatic simulation built for directional planning:
+- Monthly/annual revenue projections
+- Labor, rent, COGS, and “other” cost estimates
+- Monthly profit and profit margin
+- Break-even customer volume
+- A simple scenario comparing current staffing vs. adding one additional staff member
 
-Demand generation
-For each simulated hour, arrivals are generated using a Poisson process with an hour-specific rate:
+### Optional business lookup (Google Places)
+If a Google Places API key is available, the app can look up basic public business info (e.g., rating/reviews) to prefill or contextualize a simulation. If not, it returns realistic-looking sample data.
 
-Start with base_arrival_rate
-Multiply by:
-hourly pattern factor (from industry_data.json)
-day-of-week factor (from industry_data.json)
-weather factor (from a built-in map)
-special event factor (from a built-in map)
-Capacity model (simplified, but transparent)
-Service capacity is estimated from staffing and business type:
+---
 
-Restaurant (as implemented):
-server capacity = num_servers * 4 * seats_per_table
-kitchen capacity = num_cooks * 10
-effective capacity = min(server_capacity, kitchen_capacity)
-Retail:
-num_cashiers * 15 customers/hour
-Warehouse:
-num_pickers * 8 orders/hour (defaults if not provided)
-Other:
-fallback formula based on num_servers
-Wait & abandonment logic
-Each arriving customer gets:
+## How the simulation works (high level)
 
-a randomized party size
-a randomized patience window
-a randomized service time (adjusted by staff experience efficiency)
-Customers are served if:
+The core engine runs a time-based simulation across hours and days:
 
-estimated wait time is within patience, and
-capacity/load checks allow them to enter service
-Otherwise they are marked abandoned with a reason like:
+1. **Customer arrivals**  
+   Customers are generated per hour using a Poisson-style arrival process, adjusted by:
+   - hour-of-day patterns (lunch/dinner peaks, etc.)
+   - day-of-week factors
+   - weather and special events multipliers
 
-wait_too_long
-capacity
-Outputs & scoring
-The app aggregates:
+2. **Service capacity**  
+   Capacity is estimated from staffing and the selected business type (e.g., restaurant capacity depends on servers and kitchen throughput). Staff experience increases efficiency.
 
-customer totals (served/abandoned)
-wait-time stats (avg/median/min/max/p95)
-revenue + lost revenue (based on ticket value for served vs abandoned)
-utilization estimate
-peak hour ranking
-station utilization (simulated per station for bottleneck detection)
-composite scores:
-wait-time score
-throughput score
-efficiency score
-overall score (weighted blend)
-Recommendations
-Recommendations are generated via rules such as:
+3. **Queue + abandonment**  
+   Each customer has a “patience” value. If estimated wait exceeds patience, the customer abandons (lost revenue). Otherwise, they are served with a service-time distribution.
 
-bottleneck utilization thresholds
-wait time vs benchmark target
-abandonment rate thresholds
-utilization too low (overstaffing/cost) or too high (burnout risk)
-peak-hour scheduling hint
-Financial projections
-Financials are computed from simulation results and configuration:
+4. **KPIs + scoring**  
+   The simulator aggregates results into a summary dashboard and computes performance scores (wait-time, throughput, efficiency) using industry benchmark targets.
 
-revenue scaled to daily/weekly/monthly/annual
-costs:
-labor
-rent (from rent_per_sqft)
-COGS percentage (food_cost_percent)
-other costs (estimated as 10% of revenue)
-profit + margin
-break-even customers/month
-a simple ROI scenario (“add one staff member”)
-Configuration (inputs)
-Send a JSON payload to POST /api/simulate. Any missing fields fall back to defaults.
+---
 
-Business profile
-business_type (default: restaurant)
-business_subtype (default: casual_dining)
-business_name
-location
-Physical layout
-square_footage (default: 2000)
-Restaurant:
-num_tables (default: 20)
-seats_per_table (default: 4)
-Retail:
-num_checkout_lanes (default: 3)
-num_fitting_rooms (default: 4)
-Staffing
-num_hosts (default: 1)
-num_servers (default: 4)
-num_cooks (default: 3)
-num_cashiers (default: 2)
-num_managers (default: 1)
-num_bussers (default: 2)
-staff_experience (1–5, default: 3)
-Operating parameters
-operating_hours (default: 12)
-open_time (default: 8)
-simulation_days (default: 7)
-Demand parameters
-base_arrival_rate (default: 30 customers/hour)
-peak_multiplier (default: 2.0)
-avg_party_size (default: 2.5)
-customer_patience (default: 15 minutes)
-Service time parameters
-service_time_mean (default: 45)
-service_time_variance (default: 10)
-Financial assumptions
-avg_ticket (default: 35.00)
-hourly_wage (default: 15.00)
-rent_per_sqft (default: 25)
-food_cost_percent (default: 30)
-External factors
-weather (default: clear)
-supported values: clear, cloudy, rainy, snowy, hot, cold
-special_event (default: none)
-supported values: none, holiday, local_event, sports_game, convention, competitor_promo
-competitor_count (default: 3)
-API reference
-GET /
-Serves the UI shell (templates/index.html).
+## User experience (UI overview)
 
-GET /api/industry-data
-Returns the benchmark dataset as JSON (loaded from data/industry_data.json).
+The main screen is designed as a “configure → run → analyze” workflow:
 
-POST /api/search-business
-Optional lookup using Google Places (if GOOGLE_API_KEY is set). If not set, returns simulated business info.
+- Left panel: business profile, staffing, operations, financial assumptions, and external factors (day/weather/events)
+- Run Simulation button: executes a full run with the chosen parameters
+- Results area: performance scores, customer totals, wait times, utilization, and revenue
+- Recommendations: prioritized action list based on bottlenecks and KPI gaps
+- Financial projections: quick monthly/annual rollups + profit metrics
 
-Request body:
+---
 
-text
+## Project structure (what’s in this repository)
 
-{
-  "name": "Example Restaurant",
-  "location": "New York, NY"
-}
-POST /api/simulate
-Runs the simulation and returns:
+- `app.py`  
+  Flask server + simulation engine + recommendation and financial modeling logic.
 
-results: KPIs, wait-time stats, utilization, bottleneck, peak hours, hourly aggregates, scores
-recommendations: prioritized actions
-financials: projected revenue/cost/profit + break-even + ROI scenario
-config: resolved inputs (payload merged with defaults)
-Example curl:
+- `templates/`  
+  Frontend template served by Flask (single-page dashboard-style UI).
 
-text
+- `data/industry_data.json`  
+  Built-in benchmark dataset (targets, hourly patterns, and reference values by business type/subtype).
 
-curl -X POST "http://127.0.0.1:5000/api/simulate" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "business_type": "restaurant",
-    "business_subtype": "casual_dining",
-    "num_tables": 20,
-    "seats_per_table": 4,
-    "num_servers": 4,
-    "num_cooks": 3,
-    "operating_hours": 12,
-    "simulation_days": 7,
-    "base_arrival_rate": 30,
-    "avg_ticket": 35,
-    "hourly_wage": 15,
-    "weather": "clear",
-    "special_event": "none",
-    "staff_experience": 3
-  }'
-Google Places setup (optional)
-To enable real lookups for POST /api/search-business, set GOOGLE_API_KEY:
+- `build/`, `simulator.exe`, and other artifacts  
+  Build outputs / experimental artifacts included in the repo (not required for the Flask web app).
 
-macOS/Linux:
+---
 
-text
+## Notes, assumptions, and limitations
 
-export GOOGLE_API_KEY="YOUR_KEY"
-Windows (PowerShell):
+- This is a **model**, not a real POS/ERP system. Outputs are only as good as the assumptions you enter.
+- Scraped/real-time data is not the goal here; the focus is controllable simulation with realistic patterns.
+- Some configuration fields are foundation work for future expansion (not every field influences the simulation yet).
+- Station-level utilization is represented as an estimated breakdown to help identify bottlenecks; it is not a physical sensor-backed measurement.
 
-text
+---
 
-setx GOOGLE_API_KEY "YOUR_KEY"
-Restart the app after setting the variable.
+## Roadmap ideas (easy wins that add a lot of value)
 
-Practical cleanup / next improvements
-Add a requirements.txt (or pyproject.toml) for reproducible installs.
-Consider moving/removing simulator.exe, build artifacts, and the nano dump if they’re not part of the intended deliverable.
-Expand the UI (currently a shell) to call the APIs and render charts/tables.
-Add basic tests around:
-arrival generation
-capacity calculation
-KPI aggregation
-financial model math
-License
-No license file is included yet.
+- Add multiple simulation runs per config (Monte Carlo) and show confidence intervals
+- Make competitor count/location factors influence demand (currently a placeholder)
+- Add export-to-PDF/CSV for results and recommendations
+- Expand business-type-specific models (e.g., fitting rooms for clothing retail, triage queues for urgent care)
+- Add scenario comparison: “current vs. improved staffing vs. layout change” side-by-side
+
+---
+
+## License
+
+No license file is currently included. If you plan to share or accept contributions, adding a clear open-source license (MIT/Apache-2.0/GPL) will make reuse terms explicit.
