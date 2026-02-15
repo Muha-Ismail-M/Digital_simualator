@@ -43,6 +43,7 @@ It then produces:
 
 ## Project structure
 
+```text
 .
 ├─ app.py                     # Flask app + simulation engine + financial model
 ├─ data/
@@ -54,7 +55,7 @@ It then produces:
 ├─ digital_simulator.cpp       # Present, but currently appears to be empty/placeholder
 └─ build/Debug/                # Build artifacts (legacy/experimental)
 Note: The repository includes C++ build/debug configuration and a simulator.exe. The Flask simulator in app.py is the primary “source of truth” for the business modeling logic at the moment.
-
+```
 Quick start
 1) Create a virtual environment (recommended)
 Bash
