@@ -1,51 +1,40 @@
-# Digital Simulator (Business Operations Digital Twin)
+Digital Simulator (Business Operations Digital Twin)
+A lightweight “digital twin” simulator for modeling day-to-day business operations (customer arrivals, capacity, staffing, wait times, abandonment) and translating outcomes into KPIs, recommendations, and financial projections.
 
-A lightweight “digital twin” simulator for modeling day-to-day **business operations** (customer arrivals, capacity, staffing, wait times, abandonment) and translating outcomes into **KPIs**, **recommendations**, and **financial projections**.
+This repository currently ships as a Flask app that provides:
 
-This project currently ships as a **Flask** app that serves:
-- a simple UI template (`templates/index.html`)
-- JSON APIs to run simulations and retrieve benchmark data
+a simple UI template (templates/index.html)
+JSON APIs to run simulations and retrieve benchmark data
+What this project is
+Digital Simulator helps you answer questions like:
 
----
-
-## What this project is
-
-**Digital Simulator** helps you answer questions like:
-
-- “If I add 1 server/cashier, how much does abandonment drop?”
-- “What are my peak hours and bottleneck stations?”
-- “What’s my estimated monthly profit given rent, labor, and COGS assumptions?”
-- “How do weather or special events change my throughput and revenue?”
-
+If I add 1 server/cashier, how much does abandonment drop?
+What are my peak hours and bottleneck stations?
+What’s my estimated monthly profit given rent, labor, and COGS assumptions?
+How do weather or special events change my throughput and revenue?
 The simulator models demand using a Poisson arrival process and applies:
-- **hourly patterns** (lunch/dinner peaks, etc.)
-- **day-of-week factors**
-- **weather multipliers**
-- **special-event multipliers**
-- **staff experience efficiency**
 
+hourly patterns (lunch/dinner peaks, etc.)
+day-of-week factors
+weather multipliers
+special-event multipliers
+staff experience efficiency
 It then produces:
-- operational KPIs (wait times, throughput, abandonment rate)
-- utilization metrics + bottleneck identification
-- recommendations prioritized by severity
-- monthly/annual financial projections + a simple ROI scenario
 
----
+operational KPIs (wait times, throughput, abandonment rate)
+utilization metrics + bottleneck identification
+recommendations prioritized by severity
+monthly/annual financial projections + a simple ROI scenario
+Tech stack
+Python 3
+Flask (API + template rendering)
+Requests (optional Google Places lookups)
+JSON benchmark dataset: data/industry_data.json
+Project structure
+text
 
-## Tech stack
-
-- **Python 3**
-- **Flask** (API + template rendering)
-- **Requests** (optional Google Places lookups)
-- JSON benchmark dataset: `data/industry_data.json`
-
----
-
-## Project structure
-
-```text
 .
-├─ app.py                     # Flask app + simulation engine + financial model
+├─ app.py                      # Flask app + simulation engine + financial model
 ├─ data/
 │  └─ industry_data.json       # Benchmarks + hourly patterns + day-of-week factors
 ├─ templates/
@@ -55,7 +44,7 @@ It then produces:
 ├─ digital_simulator.cpp       # Present, but currently appears to be empty/placeholder
 └─ build/Debug/                # Build artifacts (legacy/experimental)
 Note: The repository includes C++ build/debug configuration and a simulator.exe. The Flask simulator in app.py is the primary “source of truth” for the business modeling logic at the moment.
-```
+
 Quick start
 1) Create a virtual environment (recommended)
 Bash
@@ -73,15 +62,13 @@ pip install flask requests
 Bash
 
 python app.py
-Then open:
+Open:
 
 text
 
 http://127.0.0.1:5000
 Configuration (inputs)
-The simulator accepts a JSON payload (POST) with many knobs. If you omit fields, sensible defaults are used.
-
-Common parameters:
+The simulator accepts a JSON payload (POST /api/simulate) with many knobs. If you omit fields, sensible defaults are used.
 
 Business setup
 business_type: restaurant | retail | warehouse | healthcare | service
@@ -101,7 +88,6 @@ open_time (hour of day, e.g. 8 means 8:00)
 simulation_days
 Demand model
 base_arrival_rate (customers/hour baseline before multipliers)
-peak_multiplier (present in config, but the current model primarily uses hourly patterns)
 avg_party_size
 customer_patience (minutes)
 Financial assumptions
@@ -110,7 +96,6 @@ hourly_wage
 rent_per_sqft (annualized rent assumption; converted to monthly)
 food_cost_percent
 External factors
-day_of_week (present in payload; current simulation cycles days internally)
 weather: clear | cloudy | rainy | snowy | hot | cold
 special_event: none | holiday | local_event | sports_game | convention | competitor_promo
 competitor_count (present in payload; currently not a major driver in logic)
@@ -189,20 +174,20 @@ JSON
     "financial": { "...": "..." },
     "utilization": { "...": "..." },
     "bottleneck": { "...": "..." },
-    "peak_hours": [ "..."],
+    "peak_hours": ["..."],
     "scores": { "...": "..." },
-    "hourly_data": [ "..."]
+    "hourly_data": ["..."]
   },
   "recommendations": [
     {
       "priority": "critical|high|medium|low",
       "category": "capacity|service|revenue|cost|risk|scheduling",
-      "title": "…",
-      "description": "…",
-      "action": "…",
-      "impact": "…",
-      "cost": "…",
-      "timeline": "…"
+      "title": "...",
+      "description": "...",
+      "action": "...",
+      "impact": "...",
+      "cost": "...",
+      "timeline": "..."
     }
   ],
   "financials": {
@@ -228,8 +213,8 @@ special event factor
 Capacity Capacity is estimated from staffing/layout:
 
 Restaurants: server capacity vs kitchen capacity (takes the minimum)
-Retail: cashiers * ~15 customers/hour
-Warehouse: pickers * ~8 orders/hour (if present)
+Retail: cashiers × ~15 customers/hour
+Warehouse: pickers × ~8 orders/hour (if present)
 Service + abandonment
 
 Each customer has a patience window.
@@ -249,7 +234,7 @@ bottleneck utilization thresholds
 wait time vs target
 abandonment rate thresholds
 utilization too low (overstaffing) or too high (burnout risk)
-top peak hour scheduling hint
+peak-hour scheduling hint
 Financial model Generates projections:
 
 daily/weekly/monthly/annual revenue
@@ -258,7 +243,7 @@ profit + margin
 break-even customers/month
 a simple ROI scenario (e.g., add 1 staff member to recover lost revenue)
 Optional: Google Places API setup
-To enable real business lookups for /api/search-business, set:
+To enable real business lookups for /api/search-business, set an environment variable:
 
 Bash
 
@@ -269,11 +254,11 @@ export GOOGLE_API_KEY="YOUR_KEY"
 setx GOOGLE_API_KEY "YOUR_KEY"
 Restart the Flask app after setting the variable.
 
-Known gaps / cleanup suggestions (practical)
-templates/index.html is currently very minimal; most production apps would include:
-a real HTML layout
-JavaScript to call /api/simulate and render charts/tables
-.vscode/tasks.json references digital_twin_simulator.cpp, but the repo contains digital_simulator.cpp
-build/ and .exe artifacts are usually ignored via .gitignore in production repos
+Known gaps / cleanup suggestions
+templates/index.html is minimal; a production version would typically include:
+JavaScript to call /api/simulate
+chart/table rendering for results (wait times, utilization, financials)
+.vscode/tasks.json references digital_twin_simulator.cpp, but this repo contains digital_simulator.cpp
+build/ and *.exe artifacts are usually ignored via .gitignore in production repos
 License
-No license file is currently included.
+No license file is currently included. If you plan to share or accept contributions, add a LICENSE (MIT/Apache-2.0/GPL/etc.) and update this section.
