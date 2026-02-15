@@ -43,7 +43,6 @@ It then produces:
 
 ## Project structure
 
-```text
 .
 ├─ app.py                     # Flask app + simulation engine + financial model
 ├─ data/
