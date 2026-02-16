@@ -1,4 +1,4 @@
-# Digital Simulator (Digital_simualator)
+# Digital Simulator
 
 Digital Simulator is a lightweight web app for **business operations modeling**. It lets you configure a real-world style service business (restaurant, retail, warehouse, healthcare, or general service), then runs a **discrete-event simulation** to estimate throughput, wait times, utilization, revenue, and operational bottlenecks—followed by prioritized recommendations and simple financial projections.
 
